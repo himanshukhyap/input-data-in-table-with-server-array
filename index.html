@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <label>Full Name : </label><br />
+    <input id="Name" type="text" /><br /><br />
+    <label>E-Mail Id : </label><br />
+    <input id="mail" type="email" /> <br /><br />
+
+    <button id="btn">Submit</button>
+    <button type="button" onclick="update(this)">update</button>
+
+    <table id="myTable">
+        <tr>
+
+
+            <th>S.NO.</th>
+            <th>title</th>
+            <th>content</th>
+            <th>Action</th>
+
+        </tr>
+    </table>
+
+
+    <script>
+        var d;
+
+        function getserverdata() {
+            $.ajax({
+
+                url: "http://localhost:3000/posts",
+                type: 'get',
+
+                success: function(result) {
+                    var table = document.getElementById('myTable');
+
+                    d = result.length;
+
+
+
+
+                    result.map(x => {
+                        var row = table.insertRow(1);
+                        var cell0 = row.insertCell(0);
+                        var cell1 = row.insertCell(1);
+                        var cell2 = row.insertCell(2);
+                        var cell3 = row.insertCell(3);
+                        cell0.innerHTML = x["id"];
+                        cell1.innerHTML = x['title'];
+                        cell2.innerHTML = x['content'];
+                        cell3.innerHTML =
+                            '<button type="button" id="btn" onclick="deleteRow(' + x["id"] + ')">Delete</button>' +
+                            '<button type="button" id="edit" onclick="Edit(this)">Edit</button>';
+                    });
+
+
+
+
+                },
+                error: function() {
+                    alert("error");
+                }
+            });
+        }
+        $(document).ready(function() {
+
+            $("button").click(function() {
+                $.ajax({
+
+                    url: "http://localhost:3000/posts",
+                    type: 'post',
+                    data: JSON.stringify({
+                        title: document.getElementById('Name').value,
+                        content: document.getElementById('mail').value
+                    }),
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(result) {
+                        //  console.log(result)
+                        console.log(result.valueOf(result.length - 1));
+                    },
+                    error: function() {
+                        alert("error");
+                    }
+                });
+            });
+            var y = 0;
+            $("button").click(function() {
+                getserverdata();
+            });
+
+
+
+        });
+        getserverdata();
+
+        function deleteRow(YourID) {
+
+
+            $.ajax({
+                url: "http://localhost:3000/posts/" + YourID,
+                type: 'delete',
+
+                success: function(r) {
+                    getserverdata();
+
+                },
+                error: function() {
+                    alert("error");
+                }
+            });
+
+
+        }
+
+
+
+        // function deleteRow(r) {
+        //     var i = r.parentNode.parentNode.rowIndex;
+        // tabledata.splice(tabledata.length - i, 1);
+        //     document.getElementById('myTable').deleteRow(i);
+        // }
+
+        // var selectedrow = 0;
+
+        // function Edit(r) {
+        //     selectedrow = r.parentNode.parentNode.rowIndex;
+        //     var z = tabledata.valueOf(tabledata.length - selectedrow);
+        //     var p = tabledata.length - selectedrow;
+
+        //     document.getElementById('Name').value = z[p].fullnamee;
+        //     document.getElementById('mail').value = z[p].Email;
+        //     document.getElementById('Salary').value = z[p].Salary;
+        //     document.getElementById('city').value = z[p].city;
+        // }
+
+        // function update(r) {
+        //     if (selectedrow > 0) {
+        //         tabledata[tabledata.length - selectedrow][
+        //             'fullnamee'
+        //         ] = document.getElementById('Name').value;
+        //         tabledata[tabledata.length - selectedrow][
+        //             'Email'
+        //         ] = document.getElementById('mail').value;
+        //         tabledata[tabledata.length - selectedrow][
+        //             'Salary'
+        //         ] = document.getElementById('Salary').value;
+        //         tabledata[tabledata.length - selectedrow][
+        //             'city'
+        //         ] = document.getElementById('city').value;
+
+        //         var x = document.getElementById('myTable').rows[selectedrow].cells;
+        //         x[0].innerHTML =
+        //             tabledata[tabledata.length - selectedrow]['fullnamee'];
+        //         x[1].innerHTML = tabledata[tabledata.length - selectedrow]['Email'];
+        //         x[2].innerHTML = tabledata[tabledata.length - selectedrow]['Salary'];
+        //         x[3].innerHTML = tabledata[tabledata.length - selectedrow]['city'];
+        //     }
+        // }
+    </script>
+</body>
+
+</html>
